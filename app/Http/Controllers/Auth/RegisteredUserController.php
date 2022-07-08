@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Group;
+use App\Models\UserGroup;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
@@ -45,6 +47,15 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        $defaultUserGroupId = Group::getDefaultGroupId();
+
+        if($defaultUserGroupId !== false)
+        {
+            UserGroup::create([
+                'user_id' => $user->id,
+                'group_id' => $defaultUserGroupId
+            ]);
+        }
         event(new Registered($user));
 
         Auth::login($user);

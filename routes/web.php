@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\VacationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,12 +14,24 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
+Route::get('/', function ()
+{
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
+Route::get('/dashboard', function ()
+{
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
 
-require __DIR__.'/auth.php';
+Route::resource('vacation', VacationController::class)
+    ->only([
+        'index', 'store', 'update', 'destroy',
+    ])
+    ->missing(function (Request $request)
+    {
+        return Redirect::route('vacation.index');
+    })
+    ->middleware(['auth']);
+
+require __DIR__ . '/auth.php';
